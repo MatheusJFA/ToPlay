@@ -1,0 +1,173 @@
+/* eslint-disable prettier/prettier */
+const mongoose = require("mongoose");
+const { toJSON, paginate } = require("./plugins");
+const { gameSituation } = require("../config/game");
+const { consoleName } = require("../config/console");
+
+const gameSchema = mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    plataform: {
+      type: String,
+      enum: [
+        consoleName.MAGNAVOX_ODYSSEY,
+        consoleName.PONG,
+        consoleName.PHILIPS_TELE_SPIEL,
+        consoleName.COLECO_TELSTAR,
+        consoleName.TELEJOGO,
+        consoleName.COLOR_TV_GAME,
+        consoleName.TELEJOGO_II,
+        consoleName.FAIRCHILD_CHANNEL_F,
+        consoleName.RCA_STUDIO_II,
+        consoleName.ATARI_2600,
+        consoleName.BALLY_ASTROCADE,
+        consoleName.INTERTON_VC_4000,
+        consoleName.MAGNAVOX_ODYSSEY2,
+        consoleName.MICROVISION,
+        consoleName.GAME_WATCH,
+        consoleName.INTELLIVISION,
+        consoleName.PLAYCABLE,
+        consoleName.VTECH_CREATIVISION,
+        consoleName.EPOCH_CASSETTE_VISION,
+        consoleName.COLECO_GEMINI,
+        consoleName.ARCADIA_2001,
+        consoleName.ATARI_5200,
+        consoleName.COLECOVISION,
+        consoleName.COMMODORE_MAX_MACHINE,
+        consoleName.ENTEX_ADVENTURE_VISION,
+        consoleName.VECTREX,
+        consoleName.SEGA_SG_1000,
+        consoleName.ATARI,
+        consoleName.NES_FAMICOM,
+        consoleName.MSX,
+        consoleName.CASIO_PV_100,
+        consoleName.ATARI_7800,
+        consoleName.ACTION_MAX,
+        consoleName.MASTER_SYSTEM,
+        consoleName.DYNAVISION,
+        consoleName.GAME_BOY,
+        consoleName.GAME_GEAR,
+        consoleName.COMMODORE_64G,
+        consoleName.TURBOGRAFX_16,
+        consoleName.MEGA_DRIVE_GENESIS,
+        consoleName.ATARI_LYNX,
+        consoleName.TURBOEXPRESS,
+        consoleName.NEO_GEO,
+        consoleName.SUPER_NINTENDO,
+        consoleName.COMMODORE,
+        consoleName.SEGA_CD,
+        consoleName.CD_I,
+        consoleName.SUPERVISION,
+        consoleName.MEGA_DUCK,
+        consoleName.SEGA_32X,
+        consoleName.NEO_GEO_CD,
+        consoleName.SUPER_GAME_BOY,
+        consoleName.SATELLAVIEW,
+        consoleName.TRESDO,
+        consoleName.AMIGA_CD32,
+        consoleName.FM_TOWNS_MARTY,
+        consoleName.PIONEER_LASERACTIVE,
+        consoleName.ATARI_JAGUAR,
+        consoleName.PC_FX,
+        consoleName.PLAYDIA,
+        consoleName.SEGA_SATURN,
+        consoleName.PLAYSTATION,
+        consoleName.VIRTUAL_BOY,
+        consoleName.CASIO_LOOPY,
+        consoleName.R_ZONE,
+        consoleName.ATARI_JAGUAR_CD_PRO,
+        consoleName.APPLE_PIPPIN,
+        consoleName.NINTENDO_64,
+        consoleName.GAME_COM,
+        consoleName.NEO_GEO_POCKET,
+        consoleName.GAME_BOY_COLOR,
+        consoleName.POCKETSTATION,
+        consoleName.NINTENDO_64DD,
+        consoleName.DREAMCAST,
+        consoleName.NEO_GEO_POCKET_COLOR,
+        consoleName.WONDERSWAN_COLOR,
+        consoleName.PLAYSTATION2,
+        consoleName.POKÉMON_MINI,
+        consoleName.GAME_BOY_ADVANCE,
+        consoleName.GP32,
+        consoleName.XBOX,
+        consoleName.NINTENDO_GAMECUBE,
+        consoleName.SWANCRYSTAL,
+        consoleName.GAMEKING,
+        consoleName.N_GAGE,
+        consoleName.PSX,
+        consoleName.IQUE_PLAYER,
+        consoleName.TAPWAVE_ZODIAC,
+        consoleName.ATARI_FLASHBACK,
+        consoleName.NINTENDO_DS,
+        consoleName.PSP,
+        consoleName.GIZMONDO,
+        consoleName.GP2X,
+        consoleName.XBOX_360,
+        consoleName.HYPERSCAN,
+        consoleName.PLAYSTATION3,
+        consoleName.WII,
+        consoleName.VII,
+        consoleName.N_GAGE20,
+        consoleName.NINTENDO_DSI,
+        consoleName.GP2X_WIZ,
+        consoleName.DINGOO,
+        consoleName.ZEEBO,
+        consoleName.ONLIVE,
+        consoleName.PANDORA,
+        consoleName.NINTENDO_3DS,
+        consoleName.PLAYSTATION_VITA,
+        consoleName.NINTENDO_WII_U,
+        consoleName.NEO_GEO_X,
+        consoleName.OUYA,
+        consoleName.SHIELD_PORTABLE,
+        consoleName.PLAYSTATION4,
+        consoleName.XBOX_ONE,
+        consoleName.NINTENDO_SWITCH,
+        consoleName.XBOX_SERIES_X_S,
+        consoleName.PLAYSTATION5,
+        consoleName.ATARI_VCS,
+        consoleName.PLAYDATE,
+      ],
+      required: true,
+      trim: true,
+    },
+    user: {
+      type: mongoose.SchemaTypes.ObjectId,
+      ref: "User",
+      required: true,
+    },
+    type: {
+      type: String,
+      enum: [
+        gameSituation.FINISHED,
+        gameSituation.ON_GOING,
+        gameSituation.TO_PLAY,
+      ],
+      required: true,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
+
+// add plugin that converts mongoose to json
+gameSchema.plugin(toJSON);
+gameSchema.plugin(paginate);
+
+gameSchema.statics.isGameTaken = async function (name, excludeGameId) {
+  const game = await this.findOne({ name, _id: { $ne: excludeGameId } });
+  return !!game;
+};
+
+/**
+ * @typedef User
+ */
+const User = mongoose.model("Game", gameSchema);
+
+module.exports = User;
